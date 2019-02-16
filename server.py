@@ -2,7 +2,7 @@ import asyncio
 import os
 from random import randint
 
-from image_clf import predict, predict_mock
+from image_clf import predict
 
 
 def save_image(filename, data):

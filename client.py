@@ -20,9 +20,9 @@ async def client(message):
 
     data = (await reader.read()).decode()
 
-    persons = json.loads(data)[0].get('response', 'corrupted JSON')
+    people = json.loads(data)[0].get('people', 'corrupted JSON')
 
-    print(f"Who is in the image:", *persons)
+    print(f"Who is in the image:", *people)
 
     print("Close the connection")
     writer.close()
