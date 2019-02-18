@@ -20,9 +20,10 @@ async def client(message):
 
     data = (await reader.read()).decode()
 
-    people = json.loads(data)[0].get('people', 'corrupted JSON')
+    people = json.loads(data)[0].get("people", "corrupted JSON")
 
-    print(f"Who is in the image:", *people)
+    print(f"Who is in the image:")
+    print(*people, sep=" and ")
 
     print("Close the connection")
     writer.close()
@@ -31,9 +32,9 @@ async def client(message):
 if __name__ == "__main__":
     while True:
         filename = input("Type the relative path of some image: ")
-        
-        if filename == 'exit':
+
+        if filename == "exit":
             break
-        
+
         image_content = load_image(filename)
         asyncio.run(client(image_content))

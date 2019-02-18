@@ -1,11 +1,18 @@
 import face_recognition as fr
 import json
 import os
+import re
+
+
+def get_person_name(filename):
+    matchs = re.findall("(.+)\.", filename)
+    return matchs[0]
 
 
 def predict(file):
     img = fr.load_image_file(file)
     img = fr.face_encodings(img)
+
     KNOWN_PERSONS = "./images"
 
     known_images = [
@@ -21,10 +28,12 @@ def predict(file):
             [{"people": "An error hapenned, please choose another picture"}]
         )
     elif len(img) > 1:
-        known_images_names = [i.rsplit(".", 1)[0] for i in known_images]
+        known_images_names = [
+            get_person_name(image) for image in os.listdir(KNOWN_PERSONS)
+        ]
         results = []
-        for i in img:
-            matches = fr.compare_faces(known_images_encoded, i)
+        for face in img:
+            matches = fr.compare_faces(known_images_encoded, face)
             name = "Unknow person"
 
             if True in matches:
@@ -42,9 +51,6 @@ def predict(file):
     if results.count(False) == len(results):
         return json.dumps([{"people": "Unknow person"}])
 
-    answer = {
-        i[0]: i[1]
-        for i in zip(results, os.listdir(KNOWN_PERSONS))
-    }
+    answer = {i[0]: i[1] for i in zip(results, os.listdir(KNOWN_PERSONS))}
 
-    return json.dumps([{"people": answer[True].rsplit(".", 1)[0]}])
+    return json.dumps([{"people": [get_person_name(answer[True])]}])

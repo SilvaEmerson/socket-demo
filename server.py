@@ -13,13 +13,13 @@ def save_image(filename, data):
 async def handler(reader, writer):
     image = await reader.read()
     filename = f"./{randint(0, 10)}.jpeg"
-    
+
     save_image(filename, image)
     prediction = predict(filename)
 
     print(prediction)
     os.remove(filename)
-    
+
     writer.write(prediction.encode())
     await writer.drain()
 
