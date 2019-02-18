@@ -1,26 +1,46 @@
 import asyncio
 import os
+import json
 from random import randint
 
-from image_clf import predict
+import numpy as np
+import matplotlib.pyplot as plt
+
+from image_clf import predict, KNOWN_PEOPLE_DIR
 
 
 def save_image(filename, data):
-    with open(filename, "wb") as file:
-        file.write(data)
+    data = np.array(data, dtype=np.uint8)
+    plt.imsave(filename, data)
+
+
+def setup(method=None, name=None, **kwargs):
+    return {
+        "ADD": (os.path.join(KNOWN_PEOPLE_DIR, name), on_add),
+        "PREDICT": (name, on_predict),
+    }[method]
+
+
+def on_add(filename):
+    return json.dumps([{"answer": "Saved %s" % filename}])
+
+
+def on_predict(filename):
+    prediction = predict(filename)
+    os.remove(filename)
+    return prediction
 
 
 async def handler(reader, writer):
-    image = await reader.read()
-    filename = f"./{randint(0, 10)}.jpeg"
+    message = json.loads((await reader.read()).decode())
+    filename, action = setup(**message)
 
-    save_image(filename, image)
-    prediction = predict(filename)
+    save_image(filename, message.get("content"))
+    response = action(filename)
 
-    print(prediction)
-    os.remove(filename)
+    print(response)
 
-    writer.write(prediction.encode())
+    writer.write(response.encode())
     await writer.drain()
 
     print("Close the connection")
