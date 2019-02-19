@@ -54,7 +54,7 @@ def predict(file):
     results = fr.compare_faces(known_images_encoded, current_img)
 
     if results.count(False) == len(results):
-        return json.dumps([{"answer": "Unknow person"}])
+        return json.dumps([{"answer": ["Unknow person"]}])
 
     answer = {i[0]: i[1] for i in zip(results, os.listdir(KNOWN_PEOPLE_DIR))}
 

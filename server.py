@@ -6,7 +6,7 @@ from random import randint
 import numpy as np
 import matplotlib.pyplot as plt
 
-from image_clf import predict, KNOWN_PEOPLE_DIR
+from image_clf import predict, get_person_name, KNOWN_PEOPLE_DIR
 
 
 def save_image(filename, data):
@@ -17,12 +17,12 @@ def save_image(filename, data):
 def setup(method=None, name=None, **kwargs):
     return {
         "ADD": (os.path.join(KNOWN_PEOPLE_DIR, name), on_add),
-        "PREDICT": (name, on_predict),
+        "PREDICT": ('%d.jpeg' % randint(0, 10), on_predict),
     }[method]
 
 
 def on_add(filename):
-    return json.dumps([{"answer": "Saved %s" % filename}])
+    return json.dumps([{"answer": "Saved %s" % get_person_name(filename)}])
 
 
 def on_predict(filename):
@@ -48,6 +48,8 @@ async def handler(reader, writer):
 
 
 async def main():
+    if not os.path.isdir(KNOWN_PEOPLE_DIR):
+        os.mkdir(KNOWN_PEOPLE_DIR)
     server = await asyncio.start_server(handler, "127.0.0.1", 8888)
 
     addr = server.sockets[0].getsockname()

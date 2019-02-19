@@ -8,15 +8,25 @@ def load_image(filename):
     return plt.imread(filename).tolist()
 
 
+def unknow_people_num(people):
+    return people.count("Unknow person")
+
+
 def gen_message(method, filename, content):
     return json.dumps({"method": method, "name": filename, "content": content}).encode()
 
 
 def on_predict(data):
     people = data[0].get("answer", "corrupted JSON")
-
+    unknow_people = unknow_people_num(people)
+    known_people = filter(lambda person: person != "Unknow person", people)
+    
     print(f"Who is in the image:")
-    print(*people, sep=" and ")
+    
+    if not unknow_people:
+       print(*known_people, sep=" and ")
+    else:
+       print(*known_people, "%d unknow people/person" % unknow_people, sep=" and ") 
 
 
 async def client(message):
