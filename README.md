@@ -1,6 +1,6 @@
-## Set up
+## Setup
 
-**PYTHON 3.4 >=**
+**PYTHON =< 3.4 **
 
 - `python -m virtualenv .venv`
 - `source .venv/bin/activate`
